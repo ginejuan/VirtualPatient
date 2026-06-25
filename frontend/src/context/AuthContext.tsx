@@ -4,6 +4,7 @@ interface User {
   email: string;
   name: string;
   role: string;
+  tratamiento?: string;
 }
 
 interface AuthContextType {

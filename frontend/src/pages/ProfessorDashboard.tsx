@@ -12,11 +12,12 @@ export const ProfessorDashboard: React.FC = () => {
   
   // States for new student modal
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
   const [newName, setNewName] = useState('');
   const [newLastName1, setNewLastName1] = useState('');
   const [newLastName2, setNewLastName2] = useState('');
+  const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newTratamiento, setNewTratamiento] = useState('Doctor');
 
   const fetchStudents = async () => {
     try {
@@ -77,12 +78,13 @@ export const ProfessorDashboard: React.FC = () => {
           name: newName, 
           last_name_1: newLastName1,
           last_name_2: newLastName2,
-          password: newPassword 
+          password: newPassword,
+          tratamiento: newTratamiento
         })
       });
       if (res.ok) {
         setShowAddModal(false);
-        setNewEmail(''); setNewName(''); setNewLastName1(''); setNewLastName2(''); setNewPassword('');
+        setNewEmail(''); setNewName(''); setNewLastName1(''); setNewLastName2(''); setNewPassword(''); setNewTratamiento('Doctor');
         fetchStudents();
       } else {
         alert("Error al añadir alumno (el email ya existe)");
@@ -418,9 +420,18 @@ export const ProfessorDashboard: React.FC = () => {
             </button>
             <h2 style={{ marginBottom: '1.5rem' }}>Nuevo Alumno</h2>
             <form onSubmit={handleAddStudent} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Nombre</label>
-                <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={newName} onChange={e => setNewName(e.target.value)} />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ width: '30%' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Tratamiento</label>
+                  <select className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={newTratamiento} onChange={e => setNewTratamiento(e.target.value)}>
+                    <option value="Doctor">Doctor</option>
+                    <option value="Doctora">Doctora</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Nombre</label>
+                  <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={newName} onChange={e => setNewName(e.target.value)} />
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>

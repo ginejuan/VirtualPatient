@@ -12,18 +12,20 @@ interface SimulationPageProps {
 }
 
 export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
+  const { user, token } = useAuth();
+  const tratamientoText = user?.tratamiento ? user.tratamiento.toLowerCase() : 'doctor';
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'patient',
-      content: 'Hola doctor... vengo porque no me encuentro muy bien hoy.',
+      content: `Hola ${tratamientoText}... vengo porque no me encuentro muy bien hoy.`,
       timestamp: new Date()
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<any>(null);
-  const { token } = useAuth();
 
   const handleSendMessage = async (text: string) => {
     const newUserMessage: Message = {

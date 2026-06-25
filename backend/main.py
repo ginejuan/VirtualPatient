@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional
 import os
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 from infrastructure.providers.chroma_provider import ChromaProvider
 from infrastructure.providers.google_provider import GoogleProvider
@@ -18,6 +19,14 @@ import io
 
 # Crear tablas si no existen
 Base.metadata.create_all(bind=engine)
+
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN tratamiento VARCHAR DEFAULT 'Doctor'"))
+        conn.commit()
+except Exception:
+    pass
+
 
 load_dotenv()
 
@@ -85,6 +94,7 @@ class RegisterRequest(BaseModel):
     name: str
     last_name_1: str = ""
     last_name_2: str = ""
+    tratamiento: str = "Doctor"
 
 @app.post("/register")
 async def register(request: RegisterRequest, db: Session = Depends(get_db)):
@@ -98,7 +108,8 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
         hashed_password=get_password_hash(request.password),
         name=request.name,
         last_name_1=request.last_name_1,
-        last_name_2=request.last_name_2
+        last_name_2=request.last_name_2,
+        tratamiento=request.tratamiento
     )
     db.add(new_user)
     db.commit()
@@ -112,12 +123,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     
     access_token = create_access_token(data={"sub": user.email, "role": user.role})
     full_name = f"{user.name} {user.last_name_1 or ''} {user.last_name_2 or ''}".strip()
-    return {"access_token": access_token, "token_type": "bearer", "user": {"email": user.email, "name": full_name, "role": user.role}}
+    return {"access_token": access_token, "token_type": "bearer", "user": {"email": user.email, "name": full_name, "role": user.role, "tratamiento": user.tratamiento}}
 
 @app.get("/me")
 async def get_me(current_user: User = Depends(get_current_user)):
     full_name = f"{current_user.name} {current_user.last_name_1 or ''} {current_user.last_name_2 or ''}".strip()
-    return {"email": current_user.email, "name": full_name, "role": current_user.role}
+    return {"email": current_user.email, "name": full_name, "role": current_user.role, "tratamiento": current_user.tratamiento}
 
 # --- SIMULATION ---
 
@@ -132,7 +143,7 @@ Nota para IA: NO tienes sangrado vaginal, ni contracciones regulares. El dolor m
 """
 
 @app.post("/simular")
-async def simular_chat(request: SimularRequest, db: Session = Depends(get_db)):
+async def simular_chat(request: SimularRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         # Format history for the LLM Provider
         formatted_history = [{"role": msg.role, "content": msg.content} for msg in request.history]
@@ -145,15 +156,15 @@ async def simular_chat(request: SimularRequest, db: Session = Depends(get_db)):
                 chroma_text = ChromaProvider.get_case(case_record.chroma_id)
                 if chroma_text:
                     context = chroma_text
-
-        # Generate response
-        response = llm_provider.generate_patient_response(
-            context=context,
-            history=formatted_history,
-            query=request.query
-        )
         
-        return {"response": response}
+        # Para la conversación con la paciente, pasamos el context, el historial y la nueva query
+        response_text = llm_provider.generate_patient_response(
+            context=context,
+            history=[{"role": msg.role, "content": msg.content} for msg in request.history],
+            query=request.query,
+            tratamiento=getattr(current_user, "tratamiento", "Doctor")
+        )
+        return {"response": response_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -250,6 +261,7 @@ async def create_professor(request: RegisterRequest, db: Session = Depends(get_d
         name=request.name,
         last_name_1=request.last_name_1,
         last_name_2=request.last_name_2,
+        tratamiento=request.tratamiento,
         role="professor"
     )
     db.add(new_user)
@@ -381,6 +393,7 @@ async def create_student(request: RegisterRequest, db: Session = Depends(get_db)
         name=request.name,
         last_name_1=request.last_name_1,
         last_name_2=request.last_name_2,
+        tratamiento=request.tratamiento,
         role="student",
         professor_id=current_user.id
     )

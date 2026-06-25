@@ -13,6 +13,7 @@ class User(Base):
     name = Column(String)
     last_name_1 = Column(String, nullable=True)
     last_name_2 = Column(String, nullable=True)
+    tratamiento = Column(String, default="Doctor")
     professor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     simulations = relationship("Simulation", back_populates="student")
