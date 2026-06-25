@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: virtualpatient_db
+    restart: always
+    environment:
+      POSTGRES_USER: uca_user
+      POSTGRES_PASSWORD: uca_password_123
+      POSTGRES_DB: virtualpatient
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: 
+      context: ./backend
+    container_name: virtualpatient_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://uca_user:uca_password_123@db:5432/virtualpatient
+      - JWT_SECRET=super_secret_production_key_12345
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Debes inyectarlo en Dokploy
+    depends_on:
+      - db
+    volumes:
+      - chroma_data:/app/chroma_db
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: virtualpatient_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  chroma_data:

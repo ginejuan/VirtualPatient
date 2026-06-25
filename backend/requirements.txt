@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-google-genai
+langchain-groq
+chromadb
+sentence-transformers
+pymupdf
+python-dotenv
+supabase
+passlib
+bcrypt
+python-jose
+python-multipart
+PyPDF2
+psycopg2-binary==2.9.9

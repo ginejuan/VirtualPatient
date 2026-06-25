@@ -1,0 +1,26 @@
+# Entornos virtuales
+backend/venv/
+venv/
+env/
+.env
+
+# Node
+frontend/node_modules/
+node_modules/
+dist/
+build/
+
+# Bases de datos y archivos locales
+*.db
+*.sqlite3
+chroma_db/
+backend/chroma_db/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
