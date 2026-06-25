@@ -16,7 +16,7 @@ export const AdminDashboard: React.FC = () => {
 
   const fetchProfessors = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/professors`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/professors`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -34,7 +34,7 @@ export const AdminDashboard: React.FC = () => {
   const handleAddProfessor = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/professors`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/professors`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

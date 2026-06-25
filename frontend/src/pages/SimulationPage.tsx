@@ -37,7 +37,7 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/simular`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/simular`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -72,7 +72,7 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
 
   const handleEvaluate = async (juicioClinico: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/evaluar`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/evaluar`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

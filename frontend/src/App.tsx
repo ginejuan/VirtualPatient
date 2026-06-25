@@ -14,7 +14,7 @@ function MainApp() {
 
   useEffect(() => {
     if (user && user.role === 'student') {
-      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/cases`, {
+      fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/cases`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
