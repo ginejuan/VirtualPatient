@@ -49,7 +49,7 @@ class GroqProvider(LLMProvider):
                        "4. En ese caso, los 'puntos_fuertes' DEBEN estar vacíos o solo decir 'Acertó el diagnóstico por azar', y las 'areas_de_mejora' deben decir que no hizo anamnesis.\n\n"
                        "Responde ÚNICAMENTE con un JSON válido con estas claves EXACTAS:\n"
                        "- 'nota_final': (Número de 0 a 10)\n"
-                       "- 'es_correcto': (Booleano, si el diagnóstico base es correcto)\n"
+                       "- 'es_correcto': (Booleano. DEBE SER true si el texto en 'diagnosis' coincide o acierta la enfermedad real del paciente, SIN IMPORTAR si la nota es un 0 por no haber hecho preguntas).\n"
                        "- 'puntos_fuertes': (Lista de strings con aciertos en la anamnesis o diagnóstico)\n"
                        "- 'puntos_debiles': (Lista de strings con fallos o lagunas en la consulta)\n"
                        "- 'feedback': (String con comentario pedagógico explicativo para el alumno)\n"
