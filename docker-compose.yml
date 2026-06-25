@@ -24,7 +24,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://uca_user:uca_password_123@db:5432/virtualpatient
       - JWT_SECRET=super_secret_production_key_12345
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Debes inyectarlo en Dokploy
+      - GROQ_API_KEY=${GROQ_API_KEY} # Debes inyectarlo en Dokploy
     depends_on:
       - db
     volumes:
