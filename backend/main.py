@@ -5,8 +5,8 @@ from typing import List, Dict, Optional
 import os
 from dotenv import load_dotenv
 
-from infrastructure.providers.groq_provider import GroqProvider
 from infrastructure.providers.chroma_provider import ChromaProvider
+from infrastructure.providers.google_provider import GoogleProvider
 from infrastructure.database.database import Base, engine, get_db
 from infrastructure.database.models import User, Simulation, ClinicalCase
 from infrastructure.auth.auth_handler import verify_password, get_password_hash, create_access_token, decode_access_token
@@ -34,13 +34,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
-from infrastructure.providers.groq_provider import GroqProvider
-
 load_dotenv()
 
-# We instantiate the provider. In a real scenario this would be injected.
-# We pass the api_key implicitly via environment variable GOOGLE_API_KEY
-llm_provider = GroqProvider()
+# Instanciar el proveedor de LLM
+llm_provider = GoogleProvider()
 
 class ChatMessage(BaseModel):
     role: str
