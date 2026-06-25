@@ -34,7 +34,7 @@ services:
     container_name: virtualpatient_frontend
     restart: always
     ports:
-      - "3000:80"
+      - "8095:80"
     depends_on:
       - backend
 
