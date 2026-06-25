@@ -161,15 +161,16 @@ async def simular_chat(request: SimularRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 MOCK_RUBRIC = """
-1. Anamnesis (30%): ¿Preguntó características del dolor (aparición, localización, irradiación)? ¿Preguntó por otros síntomas asociados (sangrado, fiebre, síntomas urinarios)?
-2. Pruebas Complementarias (30%): ¿Pidió monitorización fetal (CTG)? ¿Ecografía obstétrica? ¿Analítica básica con sedimento de orina?
-3. Diagnóstico (40%): ¿El diagnóstico es consistente con un posible cólico nefrítico, infección de orina o amenaza de parto prematuro?
+1. Anamnesis (30%): ¿Realizó preguntas lógicas para acotar el problema principal? ¿Indagó en antecedentes relevantes (médicos, quirúrgicos, ginecológicos, sexuales según corresponda)?
+2. Exploración y Pruebas (30%): ¿Solicitó exploración física o pruebas complementarias coherentes con la sospecha clínica?
+3. Diagnóstico (40%): ¿El diagnóstico final coincide con la enfermedad real del paciente descrita en la ficha clínica?
 """
 
 @app.post("/evaluar")
 async def evaluar_consulta(request: EvaluarRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
-        formatted_history = "\n".join([f"{msg.role.upper()}: {msg.content}" for msg in request.history])
+        role_map = {"user": "ALUMNO", "patient": "PACIENTE", "ai": "SISTEMA"}
+        formatted_history = "\n".join([f"{role_map.get(msg.role, msg.role.upper())}: {msg.content}" for msg in request.history])
         
         context = MOCK_CASE_CONTEXT
         if request.caso_id and request.caso_id != "demo":
@@ -207,7 +208,9 @@ async def evaluar_consulta(request: EvaluarRequest, db: Session = Depends(get_db
 
         return {"evaluacion": evaluation_result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
 # --- PROFESSOR GOVERNANCE ---
 
