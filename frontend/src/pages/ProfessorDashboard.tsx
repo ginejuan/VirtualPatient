@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Users, FileText, CheckCircle, XCircle, Plus, Search, UploadCloud, BookOpen } from 'lucide-react';
+import { Users, FileText, CheckCircle, XCircle, Plus, Search, UploadCloud, BookOpen, Edit2, Trash2 } from 'lucide-react';
 
 export const ProfessorDashboard: React.FC = () => {
   const { token, logout, user } = useAuth();
@@ -18,6 +18,15 @@ export const ProfessorDashboard: React.FC = () => {
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newTratamiento, setNewTratamiento] = useState('Doctor');
+
+  // States for edit student modal
+  const [editingStudent, setEditingStudent] = useState<any>(null);
+  const [editStudentName, setEditStudentName] = useState('');
+  const [editStudentLastName1, setEditStudentLastName1] = useState('');
+  const [editStudentLastName2, setEditStudentLastName2] = useState('');
+  const [editStudentEmail, setEditStudentEmail] = useState('');
+  const [editStudentPassword, setEditStudentPassword] = useState('');
+  const [editStudentTratamiento, setEditStudentTratamiento] = useState('Doctor');
 
   const fetchStudents = async () => {
     try {
@@ -88,6 +97,72 @@ export const ProfessorDashboard: React.FC = () => {
         fetchStudents();
       } else {
         alert("Error al añadir alumno (el email ya existe)");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const openEditStudent = (student: any) => {
+    setEditingStudent(student);
+    setEditStudentName(student.name);
+    setEditStudentLastName1(student.last_name_1 || '');
+    setEditStudentLastName2(student.last_name_2 || '');
+    setEditStudentEmail(student.email);
+    setEditStudentTratamiento(student.tratamiento || 'Doctor');
+    setEditStudentPassword('');
+  };
+
+  const handleEditStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStudent) return;
+    try {
+      const res = await fetch(`/api/students/${editingStudent.id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ 
+          email: editStudentEmail, 
+          name: editStudentName, 
+          last_name_1: editStudentLastName1,
+          last_name_2: editStudentLastName2,
+          password: editStudentPassword,
+          tratamiento: editStudentTratamiento
+        })
+      });
+      if (res.ok) {
+        setEditingStudent(null);
+        fetchStudents();
+        // If the selected student is being viewed in details, update that too if needed
+        if (selectedStudent && selectedStudent.id === editingStudent.id) {
+          setSelectedStudent({ ...selectedStudent, name: editStudentName });
+        }
+      } else {
+        const errData = await res.json();
+        alert(`Error: ${errData.detail || "Error al editar alumno"}`);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteStudent = async (id: number) => {
+    if (!window.confirm("¿Estás seguro de eliminar a este alumno y TODAS sus simulaciones? Esta acción no se puede deshacer.")) return;
+    try {
+      const res = await fetch(`/api/students/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        if (selectedStudent && selectedStudent.id === id) {
+          setSelectedStudent(null);
+          setSimulations([]);
+        }
+        fetchStudents();
+      } else {
+        alert("Error al eliminar el alumno");
       }
     } catch (err) {
       console.error(err);
@@ -244,9 +319,15 @@ export const ProfessorDashboard: React.FC = () => {
                     <td style={{ padding: '1rem 0.5rem', color: student.average_score >= 5 ? '#10b981' : '#ef4444', fontWeight: 600 }}>
                       {student.completed_simulations > 0 ? student.average_score : '-'}
                     </td>
-                    <td style={{ padding: '1rem 0.5rem', textAlign: 'right' }}>
-                      <button className="btn-icon-text" onClick={() => fetchSimulations(student)}>
+                    <td style={{ padding: '1rem 0.5rem', textAlign: 'right', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
+                      <button className="btn-icon-text" onClick={() => fetchSimulations(student)} style={{ marginRight: '1rem' }}>
                          Ver Detalles
+                      </button>
+                      <button className="btn-icon-text" onClick={() => openEditStudent(student)} style={{ color: 'var(--text-secondary)', padding: '0.3rem' }} title="Editar">
+                         <Edit2 size={16} />
+                      </button>
+                      <button className="btn-icon-text" onClick={() => handleDeleteStudent(student.id)} style={{ color: '#ef4444', padding: '0.3rem' }} title="Eliminar">
+                         <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
@@ -452,6 +533,52 @@ export const ProfessorDashboard: React.FC = () => {
                 <input required type="text" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
               </div>
               <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Guardar Alumno</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar alumno */}
+      {editingStudent && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel fade-in">
+            <button className="btn-close" onClick={() => setEditingStudent(null)}>
+              <XCircle size={20} />
+            </button>
+            <h2 style={{ marginBottom: '1.5rem' }}>Editar Alumno</h2>
+            <form onSubmit={handleEditStudent} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ width: '30%' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Tratamiento</label>
+                  <select className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editStudentTratamiento} onChange={e => setEditStudentTratamiento(e.target.value)}>
+                    <option value="Doctor">Doctor</option>
+                    <option value="Doctora">Doctora</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Nombre</label>
+                  <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editStudentName} onChange={e => setEditStudentName(e.target.value)} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Primer Apellido</label>
+                  <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editStudentLastName1} onChange={e => setEditStudentLastName1(e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Segundo Apellido</label>
+                  <input className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editStudentLastName2} onChange={e => setEditStudentLastName2(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Email</label>
+                <input required type="email" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editStudentEmail} onChange={e => setEditStudentEmail(e.target.value)} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Nueva Contraseña (Opcional)</label>
+                <input type="text" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} placeholder="Dejar en blanco para no cambiarla" value={editStudentPassword} onChange={e => setEditStudentPassword(e.target.value)} />
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Guardar Cambios</button>
             </form>
           </div>
         </div>

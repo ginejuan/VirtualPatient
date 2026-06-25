@@ -96,6 +96,14 @@ class RegisterRequest(BaseModel):
     last_name_2: str = ""
     tratamiento: str = "Doctor"
 
+class EditStudentRequest(BaseModel):
+    email: Optional[str] = None
+    password: Optional[str] = None
+    name: Optional[str] = None
+    last_name_1: Optional[str] = None
+    last_name_2: Optional[str] = None
+    tratamiento: Optional[str] = None
+
 @app.post("/register")
 async def register(request: RegisterRequest, db: Session = Depends(get_db)):
     # Solo para desarrollo: en producción deberías proteger esta ruta (ej. solo el admin puede registrar)
@@ -400,3 +408,49 @@ async def create_student(request: RegisterRequest, db: Session = Depends(get_db)
     db.add(new_user)
     db.commit()
     return {"message": "Alumno registrado correctamente", "email": new_user.email}
+
+@app.put("/students/{student_id}")
+async def edit_student(student_id: int, request: EditStudentRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_professor)):
+    student = db.query(User).filter(User.id == student_id, User.professor_id == current_user.id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Alumno no encontrado o no tienes permiso para editarlo")
+
+    if request.email is not None and request.email != student.email:
+        # Verify email is not taken by someone else
+        existing_user = db.query(User).filter(User.email == request.email).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="El email ya está en uso")
+        student.email = request.email
+
+    if request.password is not None and len(request.password.strip()) > 0:
+        student.hashed_password = get_password_hash(request.password)
+    
+    if request.name is not None:
+        student.name = request.name
+    if request.last_name_1 is not None:
+        student.last_name_1 = request.last_name_1
+    if request.last_name_2 is not None:
+        student.last_name_2 = request.last_name_2
+    if request.tratamiento is not None:
+        student.tratamiento = request.tratamiento
+
+    db.commit()
+    return {"message": "Alumno actualizado correctamente"}
+
+@app.delete("/students/{student_id}")
+async def delete_student(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_professor)):
+    student = db.query(User).filter(User.id == student_id, User.professor_id == current_user.id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Alumno no encontrado o no tienes permiso para borrarlo")
+
+    # Primero borramos todas sus simulaciones para evitar errores de clave foránea
+    sims = db.query(Simulation).filter(Simulation.student_id == student_id).all()
+    for sim in sims:
+        db.delete(sim)
+    
+    # Finalmente borramos al usuario
+    db.delete(student)
+    db.commit()
+    
+    return {"message": "Alumno eliminado correctamente"}
+
