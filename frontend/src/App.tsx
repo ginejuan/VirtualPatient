@@ -57,7 +57,7 @@ function MainApp() {
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: 'var(--spacing-xs)' }}>
-          <img src="https://www.uca.es/wp-content/uploads/2017/11/logo-uca-color.png" alt="Logo UCA" style={{ height: '50px' }} />
+          <div className="w-12 h-12 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4"><span className="text-blue-600 font-bold text-lg">UCA</span></div>
           <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2.5rem', margin: 0 }}>
             VirtualPatient<span style={{ color: 'hsl(var(--color-accent))'}}>UCA</span>
           </h1>

@@ -178,7 +178,7 @@ export const ProfessorDashboard: React.FC = () => {
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <img src="https://www.uca.es/wp-content/uploads/2017/11/logo-uca-color.png" alt="Logo UCA" style={{ height: '40px' }} />
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3"><span className="text-blue-600 font-bold text-sm">UCA</span></div>
           <div>
             <h1 style={{ color: 'var(--text-main)', fontSize: '2rem', margin: 0 }}>Panel del Profesor</h1>
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Gestión de alumnos y auditoría de casos clínicos</p>
