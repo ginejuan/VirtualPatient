@@ -8,7 +8,7 @@ class GroqProvider(LLMProvider):
     """
     Concrete implementation of LLMProvider using Groq (Llama 3).
     """
-    def __init__(self, model_name: str = "llama-3.3-70b-versatile", temperature: float = 0.7):
+    def __init__(self, model_name: str = "llama-3.1-8b-instant", temperature: float = 0.7):
         self.patient_llm = ChatGroq(model=model_name, temperature=temperature)
         self.evaluator_llm = ChatGroq(model=model_name, temperature=0.1)
 
