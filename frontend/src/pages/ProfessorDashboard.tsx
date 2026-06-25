@@ -20,7 +20,7 @@ export const ProfessorDashboard: React.FC = () => {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/students`, {
+      const res = await fetch(`/api/students`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -33,7 +33,7 @@ export const ProfessorDashboard: React.FC = () => {
 
   const fetchCases = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/cases`, {
+      const res = await fetch(`/api/cases`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -52,7 +52,7 @@ export const ProfessorDashboard: React.FC = () => {
   const fetchSimulations = async (student: any) => {
     setSelectedStudent(student);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/simulations/${student.id}`, {
+      const res = await fetch(`/api/simulations/${student.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -66,7 +66,7 @@ export const ProfessorDashboard: React.FC = () => {
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/students`, {
+      const res = await fetch(`/api/students`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export const ProfessorDashboard: React.FC = () => {
     formData.append('file', caseFile);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/cases/upload`, {
+      const res = await fetch(`/api/cases/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -138,7 +138,7 @@ export const ProfessorDashboard: React.FC = () => {
     e.preventDefault();
     if (!editingCase) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/cases/${editingCase.id}`, {
+      const res = await fetch(`/api/cases/${editingCase.id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export const ProfessorDashboard: React.FC = () => {
   const handleDeleteCase = async (caseId: number) => {
     if (!confirm("¿Estás seguro de que quieres eliminar este caso? Esta acción es irreversible.")) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.protocol + '//' + window.location.hostname + ':8000'}/cases/${caseId}`, {
+      const res = await fetch(`/api/cases/${caseId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
