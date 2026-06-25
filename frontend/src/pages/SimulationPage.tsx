@@ -85,12 +85,15 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
         })
       });
 
-      if (!response.ok) throw new Error('Error evaluando');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Error al evaluar');
+      }
       const data = await response.json();
       setEvaluationResult(data.evaluacion);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Hubo un error al evaluar. Revisa la consola.");
+      alert(error.message || "Hubo un error al evaluar. Revisa la consola.");
     }
   };
 
