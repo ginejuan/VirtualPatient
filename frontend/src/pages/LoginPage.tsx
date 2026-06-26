@@ -45,9 +45,10 @@ export const LoginPage: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
           <img src="/Logo_UCA.png" alt="Logo UCA" style={{ width: '120px', height: 'auto', display: 'block', margin: '0 auto 1rem auto', objectFit: 'contain' }} />
           <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2rem', marginBottom: 'var(--spacing-xs)' }}>
-            VirtualPatient<span style={{ color: 'hsl(var(--color-accent))'}}>UCA</span>
+            Obstetr<span style={{ color: 'hsl(var(--color-accent))'}}>IA</span>
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Plataforma de Simulación Clínica</p>
+          <p style={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '1.1rem' }}>Paciente Ginecológica Virtual</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.2rem' }}>Plataforma de Simulación Clínica de la UCA</p>
         </div>
         
         {error && (

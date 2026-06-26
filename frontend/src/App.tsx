@@ -58,13 +58,15 @@ function MainApp() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: 'var(--spacing-xs)' }}>
           <img src="/Logo_UCA.png" alt="Logo UCA" style={{ width: '80px', height: 'auto', objectFit: 'contain' }} />
-          <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2.5rem', margin: 0 }}>
-            VirtualPatient<span style={{ color: 'hsl(var(--color-accent))'}}>UCA</span>
-          </h1>
+          <div style={{ textAlign: 'left' }}>
+            <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2.5rem', margin: 0, lineHeight: 1.1 }}>
+              Obstetr<span style={{ color: 'hsl(var(--color-accent))'}}>IA</span>
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', margin: 0, fontWeight: 500, fontSize: '1.2rem' }}>
+              Paciente Ginecológica Virtual
+            </p>
+          </div>
         </div>
-        <p style={{ color: 'hsl(var(--color-text-muted))', fontSize: '1.1rem' }}>
-          Simulación Clínica Avanzada con IA
-        </p>
       </header>
 
       <main style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }} className="glass-panel">

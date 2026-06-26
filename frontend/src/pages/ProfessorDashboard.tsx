@@ -257,8 +257,14 @@ export const ProfessorDashboard: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img src="/Logo_UCA.png" alt="Logo UCA" style={{ width: '60px', height: 'auto', objectFit: 'contain', marginRight: '1rem' }} />
           <div>
-            <h1 style={{ color: 'var(--text-main)', fontSize: '2rem', margin: 0 }}>Panel del Profesor</h1>
-            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Gestión de alumnos y auditoría de casos clínicos</p>
+            <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '1.8rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              Obstetr<span style={{ color: 'hsl(var(--color-accent))'}}>IA</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '1.2rem', fontWeight: 400 }}>|</span>
+              <span style={{ color: 'var(--text-main)', fontSize: '1.4rem' }}>Paciente Virtual</span>
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', margin: 0, marginTop: '0.2rem', fontSize: '0.9rem' }}>
+              <strong>Panel del Profesor:</strong> Gestión de alumnos y auditoría de casos clínicos
+            </p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
