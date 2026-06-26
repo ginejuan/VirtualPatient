@@ -43,7 +43,7 @@ export const LoginPage: React.FC = () => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '1rem' }}>
       <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: 'var(--spacing-xl)' }}>
         <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-          <img src="/logoUCA.jpg" alt="Logo UCA" className="w-24 h-24 mx-auto rounded-full object-cover mb-4" />
+          <img src="/Logo_UCA.png" alt="Logo UCA" className="w-32 h-auto mx-auto object-contain mb-4" />
           <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2rem', marginBottom: 'var(--spacing-xs)' }}>
             VirtualPatient<span style={{ color: 'hsl(var(--color-accent))'}}>UCA</span>
           </h1>

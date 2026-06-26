@@ -255,7 +255,7 @@ export const ProfessorDashboard: React.FC = () => {
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <img src="/logoUCA.jpg" alt="Logo UCA" className="w-10 h-10 rounded-full object-cover mr-3" />
+          <img src="/Logo_UCA.png" alt="Logo UCA" className="w-12 h-auto object-contain mr-3" />
           <div>
             <h1 style={{ color: 'var(--text-main)', fontSize: '2rem', margin: 0 }}>Panel del Profesor</h1>
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Gestión de alumnos y auditoría de casos clínicos</p>

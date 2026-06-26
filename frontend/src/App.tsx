@@ -57,7 +57,7 @@ function MainApp() {
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: 'var(--spacing-xs)' }}>
-          <img src="/logoUCA.jpg" alt="Logo UCA" className="w-12 h-12 mx-auto rounded-full object-cover mb-4" />
+          <img src="/Logo_UCA.png" alt="Logo UCA" className="w-16 h-auto mx-auto object-contain mb-4" />
           <h1 style={{ color: 'hsl(var(--color-primary-base))', fontSize: '2.5rem', margin: 0 }}>
             VirtualPatient<span style={{ color: 'hsl(var(--color-accent))'}}>UCA</span>
           </h1>
