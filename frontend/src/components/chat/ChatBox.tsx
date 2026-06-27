@@ -57,22 +57,10 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
     const cleanText = text.replace(/!\[.*?\]\(.*?\)/g, '');
     
     try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ text: cleanText })
-      });
-      
-      if (!response.ok) throw new Error('Error fetching audio');
-      
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
+      const url = `/api/tts?text=${encodeURIComponent(cleanText)}&token=${encodeURIComponent(token || '')}`;
       const audio = new Audio(url);
       audioRef.current = audio;
-      audio.play();
+      audio.play().catch(e => console.error('Audio play error:', e));
     } catch (error) {
       console.error('TTS Error:', error);
     }

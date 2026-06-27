@@ -176,30 +176,51 @@ async def simular_chat(request: SimularRequest, db: Session = Depends(get_db), c
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-from fastapi.responses import Response
-class TTSRequest(BaseModel):
-    text: str
+from fastapi.responses import StreamingResponse
+import requests
 
-@app.post("/tts")
-def generate_tts(request: TTSRequest, current_user: User = Depends(get_current_user)):
-    from openai import OpenAI
+@app.get("/tts")
+def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
     import os
     
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if not openai_key:
-        raise HTTPException(status_code=500, detail="OpenAI API Key not configured")
+    # Authenticate manually via token query param
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    user = db.query(User).filter(User.email == payload.get("sub")).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY")
+    if not elevenlabs_key:
+        raise HTTPException(status_code=500, detail="ElevenLabs API Key not configured")
         
-    client = OpenAI(api_key=openai_key)
+    voice_id = "21m00Tcm4TlvDq8ikWAM" # Rachel
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": elevenlabs_key
+    }
+    data = {
+        "text": text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.75
+        }
+    }
     
-    try:
-        response = client.audio.speech.create(
-            model="tts-1",
-            voice="nova",
-            input=request.text
-        )
-        return Response(content=response.content, media_type="audio/mpeg")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    def iterfile():
+        with requests.post(url, json=data, headers=headers, stream=True) as r:
+            if not r.ok:
+                print(f"ElevenLabs API Error: {r.status_code} {r.text}")
+                r.raise_for_status()
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    yield chunk
+
+    return StreamingResponse(iterfile(), media_type="audio/mpeg")
 
 MOCK_RUBRIC = """
 1. Anamnesis (30%): ¿Realizó preguntas lógicas para acotar el problema principal? ¿Indagó en antecedentes relevantes (médicos, quirúrgicos, ginecológicos, sexuales según corresponda)?
