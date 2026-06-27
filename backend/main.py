@@ -195,7 +195,7 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
     if not elevenlabs_key:
         raise HTTPException(status_code=500, detail="ElevenLabs API Key not configured")
         
-    voice_id = "FGY2WhTYpPnrIDTdsKH5" # Laura (default public voice)
+    voice_id = os.getenv("ELEVENLABS_VOICE_ID", "FGY2WhTYpPnrIDTdsKH5")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
         "Accept": "audio/mpeg",
