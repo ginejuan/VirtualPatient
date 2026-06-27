@@ -222,6 +222,8 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
             "mg/mg": "miligramos por miligramo",
             "mg/dL": "miligramos por decilitro",
             "U/L": "unidades por litro",
+            "cm": "centímetros",
+            "mm": "milímetros",
             "Hb ": "Hemoglobina ",
             "AST": "A S T",
             "ALT": "A L T",
