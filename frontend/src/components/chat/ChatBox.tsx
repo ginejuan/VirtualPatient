@@ -60,11 +60,17 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
     
     const voices = synthesis.getVoices();
     
-    // Priorizar voces neuronales de alta calidad de Google o Microsoft
-    const femaleVoice = 
-      voices.find(v => v.lang.includes('es') && v.name.includes('Google') && v.name.toLowerCase().includes('español')) ||
-      voices.find(v => v.lang.includes('es') && (v.name.includes('Natural') || v.name.includes('Online'))) ||
-      voices.find(v => v.lang.includes('es') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('mujer') || v.name.includes('Monica') || v.name.includes('Sabina') || v.name.includes('Helena')));
+    // Buscar estrictamente voces que sabemos que son femeninas
+    const femaleVoice = voices.find(v => 
+      v.lang.includes('es') && 
+      (v.name.includes('Sabina') || 
+       v.name.includes('Helena') || 
+       v.name.includes('Monica') || 
+       v.name.includes('Laura') ||
+       v.name.includes('Conchita') ||
+       v.name.toLowerCase().includes('female') || 
+       v.name.toLowerCase().includes('mujer'))
+    );
     
     if (femaleVoice) {
       utterance.voice = femaleVoice;
