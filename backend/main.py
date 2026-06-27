@@ -211,6 +211,28 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
     else:
         voice_id = os.getenv("ELEVENLABS_VOICE_ID", "FGY2WhTYpPnrIDTdsKH5")
 
+    # Normalize clinical abbreviations for better TTS pronunciation
+    def normalize_clinical_text(t: str) -> str:
+        replacements = {
+            "g/dL": "gramos por decilitro",
+            "/µL": " por microlitro",
+            "µL": "microlitros",
+            "+++": "tres cruces",
+            "++": "dos cruces",
+            "mg/mg": "miligramos por miligramo",
+            "mg/dL": "miligramos por decilitro",
+            "U/L": "unidades por litro",
+            "Hb ": "Hemoglobina ",
+            "AST": "A S T",
+            "ALT": "A L T",
+            "LDH": "L D H"
+        }
+        for k, v in replacements.items():
+            t = t.replace(k, v)
+        return t
+        
+    audio_text = normalize_clinical_text(clean_text)
+
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
         "Accept": "audio/mpeg",
@@ -218,7 +240,7 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
         "xi-api-key": elevenlabs_key
     }
     data = {
-        "text": clean_text,
+        "text": audio_text,
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {
             "stability": 0.5,
