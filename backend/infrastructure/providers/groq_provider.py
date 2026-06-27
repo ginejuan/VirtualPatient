@@ -12,10 +12,11 @@ class GroqProvider(LLMProvider):
         self.patient_llm = ChatGroq(model=model_name, temperature=temperature)
         self.evaluator_llm = ChatGroq(model=model_name, temperature=0.1)
 
-    def generate_patient_response(self, context: str, history: List[Dict[str, str]], query: str) -> str:
+    def generate_patient_response(self, context: str, history: List[Dict[str, str]], query: str, tratamiento: str = "Doctor") -> str:
         messages = [
             ("system", "Eres un SIMULADOR CLÍNICO DUAL. Asumes dos roles simultáneos basados en la ficha clínica proporcionada:\n"
                        "ROL 1 (Principal): La paciente. Cuando el médico te entreviste, responde con lenguaje COLOQUIAL, sin jerga médica. No te adelantes, revela antecedentes solo si pregunta. NO reveles tu diagnóstico.\n"
+                       "El médico tratante (usuario) tiene el título de '{tratamiento}'. Dirígete a él/ella usando este tratamiento (ej: 'Hola {tratamiento}').\n"
                        "ROL 2 (Sistema Clínico): Cuando el médico indique explícitamente que va a realizar una exploración física (ej: 'Te voy a tomar la tensión', 'Te exploro el abdomen') o solicite pruebas complementarias (ej: 'Pido analítica', 'Solicito ecografía', 'Pido cultivos'), debes salir de tu rol de paciente y comportarte como el entorno clínico. Dale los resultados objetivos, médicos y técnicos que aparezcan en tu ficha clínica. Si la prueba solicitada NO aparece en tu ficha, indícale un resultado normal/anodino estándar.\n\n"
                        "Ficha Clínica:\n{context}")
         ]
@@ -30,7 +31,7 @@ class GroqProvider(LLMProvider):
         prompt = ChatPromptTemplate.from_messages(messages)
         
         chain = prompt | self.patient_llm
-        res = chain.invoke({"context": context, "query": query})
+        res = chain.invoke({"context": context, "query": query, "tratamiento": tratamiento.lower()})
         return res.content
 
     def evaluate_consultation(self, case_context: str, rubric: str, history: str, student_judgment: str) -> Dict[str, Any]:
