@@ -176,6 +176,39 @@ async def simular_chat(request: SimularRequest, db: Session = Depends(get_db), c
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi.responses import Response
+class TTSRequest(BaseModel):
+    text: str
+
+@app.post("/tts")
+def generate_tts(request: TTSRequest, current_user: User = Depends(get_current_user)):
+    import requests
+    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY")
+    if not elevenlabs_key:
+        raise HTTPException(status_code=500, detail="ElevenLabs API Key not configured")
+        
+    # Rachel Voice ID
+    url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": elevenlabs_key
+    }
+    data = {
+        "text": request.text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.75
+        }
+    }
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        return Response(content=response.content, media_type="audio/mpeg")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 MOCK_RUBRIC = """
 1. Anamnesis (30%): ¿Realizó preguntas lógicas para acotar el problema principal? ¿Indagó en antecedentes relevantes (médicos, quirúrgicos, ginecológicos, sexuales según corresponda)?
 2. Exploración y Pruebas (30%): ¿Solicitó exploración física o pruebas complementarias coherentes con la sospecha clínica?

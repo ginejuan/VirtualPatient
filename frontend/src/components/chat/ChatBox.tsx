@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import type { Message } from './MessageBubble';
 import { MessageBubble } from './MessageBubble';
+import { useAuth } from '../../context/AuthContext';
 
 export interface ChatBoxProps {
   messages: Message[];
@@ -11,7 +12,6 @@ export interface ChatBoxProps {
 
 // Support for browser speech APIs
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-const synthesis = window.speechSynthesis;
 
 export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMessage }) => {
   const [inputValue, setInputValue] = useState('');
@@ -19,6 +19,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { token } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,13 +31,10 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
   }, [messages, isTyping]);
 
   useEffect(() => {
-    // Load voices
-    if (synthesis) {
-      synthesis.getVoices();
-      synthesis.onvoiceschanged = () => synthesis.getVoices();
-    }
     return () => {
-      synthesis?.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     };
   }, []);
 
@@ -48,43 +47,41 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
     }
   }, [messages]);
 
-  const speak = (text: string) => {
-    if (!synthesis) return;
-    synthesis.cancel(); // Stop current speech
-    
-    // Clean markdown images before speaking
-    let cleanText = text.replace(/!\[.*?\]\(.*?\)/g, '');
-    // Clean problematic punctuation for some TTS engines
-    cleanText = cleanText.replace(/[¿¡*#_]/g, '');
-    
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'es-ES';
-    
-    const voices = synthesis.getVoices();
-    
-    // Buscar estrictamente voces que sabemos que son femeninas (incluida la de alta calidad de Google US)
-    const femaleVoice = voices.find(v => 
-      v.lang.includes('es') && 
-      (v.name === 'Google español de Estados Unidos' ||
-       v.name.includes('Sabina') || 
-       v.name.includes('Helena') || 
-       v.name.includes('Monica') || 
-       v.name.includes('Laura') ||
-       v.name.includes('Conchita') ||
-       v.name.toLowerCase().includes('female') || 
-       v.name.toLowerCase().includes('mujer'))
-    );
-    
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
+  const speak = async (text: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
     
-    synthesis.speak(utterance);
+    // Clean markdown images before speaking
+    const cleanText = text.replace(/!\[.*?\]\(.*?\)/g, '');
+    
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) throw new Error('Error fetching audio');
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.play();
+    } catch (error) {
+      console.error('TTS Error:', error);
+    }
   };
 
   const toggleVoice = () => {
-    if (isVoiceEnabled) {
-      synthesis?.cancel();
+    if (isVoiceEnabled && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
     setIsVoiceEnabled(!isVoiceEnabled);
   };
@@ -126,7 +123,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
       recognitionRef.current?.stop();
       setIsListening(false);
     }
-    synthesis?.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     onSendMessage(inputValue.trim());
     setInputValue('');
   };
