@@ -53,7 +53,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
     synthesis.cancel(); // Stop current speech
     
     // Clean markdown images before speaking
-    const cleanText = text.replace(/!\[.*?\]\(.*?\)/g, '');
+    let cleanText = text.replace(/!\[.*?\]\(.*?\)/g, '');
+    // Clean problematic punctuation for some TTS engines
+    cleanText = cleanText.replace(/[¿¡*#_]/g, '');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = 'es-ES';
