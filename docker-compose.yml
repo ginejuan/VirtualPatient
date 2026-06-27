@@ -33,7 +33,14 @@ services:
     restart: always
     depends_on:
       - backend
+    networks:
+      - dokploy-network
+      - default
 
 volumes:
   postgres_data:
   chroma_data:
+
+networks:
+  dokploy-network:
+    external: true
