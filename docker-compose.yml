@@ -31,8 +31,6 @@ services:
     build: 
       context: ./frontend
     restart: always
-    ports:
-      - "8095:80"
     depends_on:
       - backend
 
