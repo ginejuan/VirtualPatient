@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 
 from infrastructure.providers.chroma_provider import ChromaProvider
-from infrastructure.providers.groq_provider import GroqProvider
 from infrastructure.database.database import Base, engine, get_db
 from infrastructure.database.models import User, Simulation, ClinicalCase
 from infrastructure.auth.auth_handler import verify_password, get_password_hash, create_access_token, decode_access_token
@@ -45,8 +44,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 load_dotenv()
 
+from infrastructure.providers.openai_provider import OpenAIProvider
 # Instanciar el proveedor de LLM
-llm_provider = GroqProvider()
+llm_provider = OpenAIProvider()
 
 class ChatMessage(BaseModel):
     role: str
