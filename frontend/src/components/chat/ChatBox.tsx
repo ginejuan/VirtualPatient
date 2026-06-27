@@ -60,10 +60,11 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
     
     const voices = synthesis.getVoices();
     
-    // Buscar estrictamente voces que sabemos que son femeninas
+    // Buscar estrictamente voces que sabemos que son femeninas (incluida la de alta calidad de Google US)
     const femaleVoice = voices.find(v => 
       v.lang.includes('es') && 
-      (v.name.includes('Sabina') || 
+      (v.name === 'Google español de Estados Unidos' ||
+       v.name.includes('Sabina') || 
        v.name.includes('Helena') || 
        v.name.includes('Monica') || 
        v.name.includes('Laura') ||
