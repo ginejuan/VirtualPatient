@@ -182,29 +182,21 @@ class TTSRequest(BaseModel):
 
 @app.post("/tts")
 def generate_tts(request: TTSRequest, current_user: User = Depends(get_current_user)):
-    import requests
-    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY")
-    if not elevenlabs_key:
-        raise HTTPException(status_code=500, detail="ElevenLabs API Key not configured")
+    from openai import OpenAI
+    import os
+    
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if not openai_key:
+        raise HTTPException(status_code=500, detail="OpenAI API Key not configured")
         
-    # Rachel Voice ID
-    url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": elevenlabs_key
-    }
-    data = {
-        "text": request.text,
-        "model_id": "eleven_multilingual_v2",
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.75
-        }
-    }
+    client = OpenAI(api_key=openai_key)
+    
     try:
-        response = requests.post(url, json=data, headers=headers)
-        response.raise_for_status()
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice="nova",
+            input=request.text
+        )
         return Response(content=response.content, media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
