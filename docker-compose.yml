@@ -24,6 +24,7 @@ services:
       - JWT_SECRET=super_secret_production_key_12345
       - GROQ_API_KEY=${GROQ_API_KEY} # Debes inyectarlo en Dokploy
       - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Debes inyectarlo en Dokploy
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       - db
     volumes:
