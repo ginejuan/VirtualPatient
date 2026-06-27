@@ -137,7 +137,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
           style={{ padding: '0.25rem 0.5rem', background: isVoiceEnabled ? 'rgba(59, 130, 246, 0.1)' : 'transparent' }}
           title={isVoiceEnabled ? 'Silenciar paciente' : 'Activar voz de paciente'}
         >
-          {isVoiceEnabled ? <Volume2 size={18} color="hsl(var(--color-primary-base))" /> : <VolumeX size={18} color="var(--text-muted)" />}
+          {isVoiceEnabled ? <Volume2 size={18} color="hsl(var(--color-primary-base))" /> : <VolumeX size={18} color="#6b7280" />}
         </button>
       </div>
       
