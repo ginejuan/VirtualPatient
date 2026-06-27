@@ -13,6 +13,8 @@ interface MessageBubbleProps {
   message: Message;
 }
 
+import ReactMarkdown from 'react-markdown';
+
 export const MessageBubble = ({ message }: MessageBubbleProps) => {
   const isUser = message.role === 'user';
 
@@ -22,7 +24,9 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
         {isUser ? <User size={18} /> : <Activity size={18} />}
       </div>
       <div className="message-content glass-panel">
-        <p>{message.content}</p>
+        <div className="markdown-body">
+          <ReactMarkdown>{message.content}</ReactMarkdown>
+        </div>
         <span className="message-time">
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
