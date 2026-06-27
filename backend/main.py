@@ -195,7 +195,22 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
     if not elevenlabs_key:
         raise HTTPException(status_code=500, detail="ElevenLabs API Key not configured")
         
-    voice_id = os.getenv("ELEVENLABS_VOICE_ID", "FGY2WhTYpPnrIDTdsKH5")
+    clean_text = text.strip()
+    is_system = False
+    
+    if clean_text.upper().startswith("[SISTEMA CLÍNICO]"):
+        is_system = True
+        clean_text = clean_text.split("]", 1)[-1].lstrip(": \n").strip()
+    elif clean_text.upper().startswith("SISTEMA CLÍNICO:"):
+        is_system = True
+        clean_text = clean_text.split(":", 1)[-1].strip()
+
+    if is_system:
+        # Use a distinct narrator voice (Charlie - public voice)
+        voice_id = "IKne3meq5aSn9XLyUdCD"
+    else:
+        voice_id = os.getenv("ELEVENLABS_VOICE_ID", "FGY2WhTYpPnrIDTdsKH5")
+
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
         "Accept": "audio/mpeg",
@@ -203,7 +218,7 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
         "xi-api-key": elevenlabs_key
     }
     data = {
-        "text": text,
+        "text": clean_text,
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {
             "stability": 0.5,
