@@ -206,8 +206,8 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
         clean_text = clean_text.split(":", 1)[-1].strip()
 
     if is_system:
-        # Use a distinct narrator voice (Charlie - public voice)
-        voice_id = "IKne3meq5aSn9XLyUdCD"
+        # Use the specific narrator voice provided by the user
+        voice_id = os.getenv("ELEVENLABS_SYSTEM_VOICE_ID", "Vpv1YgvVd6CHIzOTiTt8")
     else:
         voice_id = os.getenv("ELEVENLABS_VOICE_ID", "FGY2WhTYpPnrIDTdsKH5")
 
