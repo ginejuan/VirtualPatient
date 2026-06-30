@@ -55,7 +55,7 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
            // If speaking, generate pseudo-random syllables
            if (isSpeaking) {
              const currentFrame = Math.floor(state.clock.elapsedTime * 8); // Change shape 8 times per second
-             const pseudoRandom = Math.abs(Math.sin(currentFrame * 435.23)) * 0.7; // Random width 0 to 0.7
+             const pseudoRandom = Math.abs(Math.sin(currentFrame * 435.23)) * 0.35 + 0.05; // Random width 0.05 to 0.4 (more subtle)
              child.morphTargetInfluences[jawOpenIdx] = THREE.MathUtils.lerp(child.morphTargetInfluences[jawOpenIdx], pseudoRandom, 0.4);
            } else {
              // close mouth
