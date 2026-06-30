@@ -63,7 +63,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
       const audio = new Audio(url);
       audioRef.current = audio;
       
-      audio.onplay = () => onSpeakStart?.();
+      audio.onplaying = () => onSpeakStart?.();
       audio.onended = () => onSpeakEnd?.();
       audio.onpause = () => onSpeakEnd?.();
       

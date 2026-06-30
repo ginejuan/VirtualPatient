@@ -73,7 +73,7 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
-        <Canvas camera={{ position: [0, 1.55, 0.55], fov: 45 }}>
+        <Canvas camera={{ position: [-0.2, 1.55, 0.55], fov: 45 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
