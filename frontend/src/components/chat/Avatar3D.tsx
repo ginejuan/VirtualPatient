@@ -1,7 +1,33 @@
-import React from 'react';
+import React, { Component, ErrorInfo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
+
+class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Avatar Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fee2e2', color: '#ef4444', padding: '1rem', textAlign: 'center' }}>
+          <span>No se pudo cargar el Avatar 3D.</span>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // URL to a generic female Ready Player Me model (can be changed later)
 const MODEL_URL = 'https://models.readyplayer.me/64b5585b7e2e83162b7ebbb1.glb';
@@ -38,22 +64,24 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
 export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
-      <Canvas camera={{ position: [0, -0.2, 1.5], fov: 45 }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[2, 2, 2]} intensity={1.5} />
-        <Environment preset="city" />
-        <React.Suspense fallback={null}>
-          <Model isSpeaking={isSpeaking} />
-        </React.Suspense>
-        <OrbitControls 
-          enableZoom={false} 
-          enablePan={false} 
-          minPolarAngle={Math.PI / 2.2} 
-          maxPolarAngle={Math.PI / 1.8}
-          minAzimuthAngle={-Math.PI / 8}
-          maxAzimuthAngle={Math.PI / 8}
-        />
-      </Canvas>
+      <AvatarErrorBoundary>
+        <Canvas camera={{ position: [0, -0.2, 1.5], fov: 45 }}>
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[2, 2, 2]} intensity={1.5} />
+          <Environment preset="city" />
+          <React.Suspense fallback={<primitive object={new THREE.Group()} />}>
+            <Model isSpeaking={isSpeaking} />
+          </React.Suspense>
+          <OrbitControls 
+            enableZoom={false} 
+            enablePan={false} 
+            minPolarAngle={Math.PI / 2.2} 
+            maxPolarAngle={Math.PI / 1.8}
+            minAzimuthAngle={-Math.PI / 8}
+            maxAzimuthAngle={Math.PI / 8}
+          />
+        </Canvas>
+      </AvatarErrorBoundary>
     </div>
   );
 };
