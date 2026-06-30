@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChatBox } from '../components/chat/ChatBox';
+import { Avatar3D } from '../components/chat/Avatar3D';
 import type { Message } from '../components/chat/MessageBubble';
 import { ArrowLeft, Stethoscope } from 'lucide-react';
 import { EvaluationModal } from '../components/evaluation/EvaluationModal';
@@ -26,6 +27,7 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<any>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const handleSendMessage = async (text: string) => {
     const newUserMessage: Message = {
@@ -122,6 +124,8 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
 
       <main className="simulation-content">
         <div className="patient-sidebar glass-panel">
+          <Avatar3D isSpeaking={isSpeaking} />
+          
           <h3>Datos Clínicos Conocidos</h3>
           <ul className="clinical-data-list">
              <li><strong>Edad:</strong> 28 años</li>
@@ -137,7 +141,9 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
           <ChatBox 
             messages={messages} 
             isTyping={isTyping} 
-            onSendMessage={handleSendMessage} 
+            onSendMessage={handleSendMessage}
+            onSpeakStart={() => setIsSpeaking(true)}
+            onSpeakEnd={() => setIsSpeaking(false)}
           />
         </div>
       </main>

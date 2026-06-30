@@ -8,12 +8,14 @@ export interface ChatBoxProps {
   messages: Message[];
   isTyping: boolean;
   onSendMessage: (text: string) => void;
+  onSpeakStart?: () => void;
+  onSpeakEnd?: () => void;
 }
 
 // Support for browser speech APIs
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMessage }) => {
+export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMessage, onSpeakStart, onSpeakEnd }) => {
   const [inputValue, setInputValue] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
@@ -60,7 +62,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
       const url = `/api/tts?text=${encodeURIComponent(cleanText)}&token=${encodeURIComponent(token || '')}`;
       const audio = new Audio(url);
       audioRef.current = audio;
-      audio.play().catch(e => console.error('Audio play error:', e));
+      
+      audio.onplay = () => onSpeakStart?.();
+      audio.onended = () => onSpeakEnd?.();
+      audio.onpause = () => onSpeakEnd?.();
+      
+      audio.play().catch(e => {
+        console.error('Audio play error:', e);
+        onSpeakEnd?.();
+      });
     } catch (error) {
       console.error('TTS Error:', error);
     }
