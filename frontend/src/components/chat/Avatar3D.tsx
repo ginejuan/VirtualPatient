@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import type { ErrorInfo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment, Html, Center, Bounds } from '@react-three/drei';
+import { useGLTF, OrbitControls, Environment, Html, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
 class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
