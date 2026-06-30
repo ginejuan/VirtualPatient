@@ -30,11 +30,14 @@ class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { has
   }
 }
 
-// URL to a generic female Ready Player Me model (can be changed later)
-const MODEL_URL = '/avatar.glb';
+export interface Avatar3DProps {
+  isSpeaking: boolean;
+  patientAge?: number;
+}
 
-function Model({ isSpeaking }: { isSpeaking: boolean }) {
-  const { scene } = useGLTF(MODEL_URL);
+const AvatarModel = ({ isSpeaking, patientAge }: Avatar3DProps) => {
+  const modelPath = patientAge && patientAge > 50 ? '/avatar_mayor.glb' : '/avatar.glb';
+  const { scene } = useGLTF(modelPath);
   
   // A simple animation loop to move the jaw if isSpeaking is true
   useFrame((state) => {
@@ -69,7 +72,7 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
   return <primitive object={scene} />;
 }
 
-export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
+export const Avatar3D = ({ isSpeaking, patientAge }: Avatar3DProps) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
@@ -77,8 +80,8 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
-          <React.Suspense fallback={<Html center><div style={{ color: '#4b5563', fontWeight: 'bold', textAlign: 'center', width: '200px' }}>Cargando modelo 3D...<br/><small>(Puede tardar un poco si es pesado)</small></div></Html>}>
-            <Model isSpeaking={isSpeaking} />
+          <React.Suspense fallback={<Html center><div style={{ color: 'var(--text-secondary)' }}>Cargando paciente...</div></Html>}>
+            <AvatarModel isSpeaking={isSpeaking} patientAge={patientAge} />
           </React.Suspense>
           <OrbitControls 
             makeDefault

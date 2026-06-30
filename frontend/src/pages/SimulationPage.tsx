@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChatBox } from '../components/chat/ChatBox';
 import { Avatar3D } from '../components/chat/Avatar3D';
 import type { Message } from '../components/chat/MessageBubble';
@@ -28,6 +28,31 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
   const [showModal, setShowModal] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<any>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [caseDetails, setCaseDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchCaseDetails = async () => {
+      try {
+        const response = await fetch('/api/cases', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const cases = await response.json();
+          // casoId might be string or number, so use == for comparison
+          const currentCase = cases.find((c: any) => c.id == casoId);
+          if (currentCase) {
+            setCaseDetails(currentCase);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching case details:", error);
+      }
+    };
+    
+    if (casoId && casoId !== 'demo') {
+      fetchCaseDetails();
+    }
+  }, [casoId, token]);
 
   const handleSendMessage = async (text: string) => {
     const newUserMessage: Message = {
@@ -124,13 +149,13 @@ export const SimulationPage = ({ casoId, onBack }: SimulationPageProps) => {
 
       <main className="simulation-content">
         <div className="patient-sidebar glass-panel">
-          <Avatar3D isSpeaking={isSpeaking} />
+          <Avatar3D isSpeaking={isSpeaking} patientAge={caseDetails?.age} />
           
           <h3>Datos Clínicos Conocidos</h3>
           <ul className="clinical-data-list">
-             <li><strong>Edad:</strong> 28 años</li>
-             <li><strong>Semanas Gestación:</strong> 32 semanas</li>
-             <li><strong>Motivo de consulta:</strong> Derivada de urgencias por malestar general.</li>
+             <li><strong>Edad:</strong> {caseDetails?.age ? `${caseDetails.age} años` : '28 años'}</li>
+             <li><strong>Semanas Gestación:</strong> {caseDetails?.gestational_weeks ? `${caseDetails.gestational_weeks} semanas` : '32 semanas'}</li>
+             <li><strong>Motivo de consulta:</strong> {caseDetails?.reason || 'Derivada de urgencias por malestar general.'}</li>
           </ul>
           <div className="info-alert">
              La información completa solo se revelará a través de tu anamnesis.

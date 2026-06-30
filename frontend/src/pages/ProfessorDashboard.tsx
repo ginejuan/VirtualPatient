@@ -172,6 +172,9 @@ export const ProfessorDashboard: React.FC = () => {
   // States for new case upload
   const [caseTitle, setCaseTitle] = useState('');
   const [caseDescription, setCaseDescription] = useState('');
+  const [caseAge, setCaseAge] = useState('');
+  const [caseGestationalWeeks, setCaseGestationalWeeks] = useState('');
+  const [caseReason, setCaseReason] = useState('');
   const [caseFile, setCaseFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -183,6 +186,9 @@ export const ProfessorDashboard: React.FC = () => {
     const formData = new FormData();
     formData.append('title', caseTitle);
     formData.append('description', caseDescription);
+    if (caseAge) formData.append('age', caseAge);
+    if (caseGestationalWeeks) formData.append('gestational_weeks', caseGestationalWeeks);
+    if (caseReason) formData.append('reason', caseReason);
     formData.append('file', caseFile);
 
     try {
@@ -192,7 +198,7 @@ export const ProfessorDashboard: React.FC = () => {
         body: formData
       });
       if (res.ok) {
-        setCaseTitle(''); setCaseDescription(''); setCaseFile(null);
+        setCaseTitle(''); setCaseDescription(''); setCaseAge(''); setCaseGestationalWeeks(''); setCaseReason(''); setCaseFile(null);
         fetchCases();
         alert("Caso subido con éxito a ChromaDB");
       } else {
@@ -471,6 +477,20 @@ export const ProfessorDashboard: React.FC = () => {
                 <div>
                   <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Título del Caso</label>
                   <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={caseTitle} onChange={e => setCaseTitle(e.target.value)} placeholder="Ej: Preeclampsia 32 semanas" />
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Edad de la Paciente</label>
+                    <input type="number" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={caseAge} onChange={e => setCaseAge(e.target.value)} placeholder="Ej: 28" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Semanas de Gestación</label>
+                    <input type="number" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={caseGestationalWeeks} onChange={e => setCaseGestationalWeeks(e.target.value)} placeholder="Ej: 32" />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Motivo de Consulta</label>
+                  <input className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={caseReason} onChange={e => setCaseReason(e.target.value)} placeholder="Ej: Derivada de urgencias por malestar general" />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Descripción (Opcional)</label>

@@ -223,6 +223,7 @@ def generate_tts(text: str, token: str, db: Session = Depends(get_db)):
             "mg/dL": "miligramos por decilitro",
             "U/L": "unidades por litro",
             "cm": "centímetros",
+            "mmHg": "milímetros de mercurio",
             "mm": "milímetros",
             "Hb ": "Hemoglobina ",
             "AST": "A S T",
@@ -367,6 +368,9 @@ async def create_professor(request: RegisterRequest, db: Session = Depends(get_d
 async def upload_clinical_case(
     title: str = Form(...),
     description: str = Form(None),
+    age: int = Form(None),
+    gestational_weeks: int = Form(None),
+    reason: str = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_professor)
@@ -395,6 +399,9 @@ async def upload_clinical_case(
         new_case = ClinicalCase(
             title=title,
             description=description,
+            age=age,
+            gestational_weeks=gestational_weeks,
+            reason=reason,
             chroma_id=chroma_id,
             created_by_id=current_user.id
         )
@@ -409,11 +416,21 @@ async def upload_clinical_case(
 async def get_clinical_cases(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Tanto alumnos como profesores pueden ver los casos
     cases = db.query(ClinicalCase).order_by(ClinicalCase.created_at.desc()).all()
-    return [{"id": c.id, "title": c.title, "description": c.description} for c in cases]
+    return [{
+        "id": c.id, 
+        "title": c.title, 
+        "description": c.description,
+        "age": c.age,
+        "gestational_weeks": c.gestational_weeks,
+        "reason": c.reason
+    } for c in cases]
 
 class CaseEditRequest(BaseModel):
     title: str
     description: Optional[str] = None
+    age: Optional[int] = None
+    gestational_weeks: Optional[int] = None
+    reason: Optional[str] = None
 
 @app.put("/cases/{case_id}")
 async def edit_case(case_id: int, request: CaseEditRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_professor)):
@@ -425,6 +442,9 @@ async def edit_case(case_id: int, request: CaseEditRequest, db: Session = Depend
     
     case_record.title = request.title
     case_record.description = request.description
+    case_record.age = request.age
+    case_record.gestational_weeks = request.gestational_weeks
+    case_record.reason = request.reason
     db.commit()
     return {"message": "Caso actualizado"}
 
