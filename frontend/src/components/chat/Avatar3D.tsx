@@ -55,7 +55,7 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
            // If speaking, generate pseudo-random syllables
            if (isSpeaking) {
              const currentFrame = Math.floor(state.clock.elapsedTime * 8); // Change shape 8 times per second
-             const pseudoRandom = Math.abs(Math.sin(currentFrame * 435.23)) * 0.35 + 0.05; // Random width 0.05 to 0.4 (more subtle)
+             const pseudoRandom = Math.abs(Math.sin(currentFrame * 435.23)) * 0.2 + 0.05; // Random width 0.05 to 0.25 (very subtle)
              child.morphTargetInfluences[jawOpenIdx] = THREE.MathUtils.lerp(child.morphTargetInfluences[jawOpenIdx], pseudoRandom, 0.4);
            } else {
              // close mouth
@@ -73,7 +73,7 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
-        <Canvas camera={{ position: [0, 1.5, 1.0], fov: 45 }}>
+        <Canvas camera={{ position: [0, 1.55, 0.55], fov: 45 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
@@ -83,7 +83,7 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
           <OrbitControls 
             makeDefault
             enableZoom={true} 
-            target={[0, 1.5, 0]}
+            target={[0, 1.55, 0]}
             enablePan={false} 
             minPolarAngle={Math.PI / 2.2} 
             maxPolarAngle={Math.PI / 1.8}
