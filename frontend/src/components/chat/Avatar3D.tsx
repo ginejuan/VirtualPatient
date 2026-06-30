@@ -73,19 +73,17 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
-        <Canvas camera={{ position: [0, -0.15, 0.4], fov: 45 }}>
+        <Canvas camera={{ position: [0, 1.5, 1.0], fov: 45 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
           <React.Suspense fallback={<Html center><div style={{ color: '#4b5563', fontWeight: 'bold', textAlign: 'center', width: '200px' }}>Cargando modelo 3D...<br/><small>(Puede tardar un poco si es pesado)</small></div></Html>}>
-            <Center top>
-              <Model isSpeaking={isSpeaking} />
-            </Center>
+            <Model isSpeaking={isSpeaking} />
           </React.Suspense>
           <OrbitControls 
             makeDefault
             enableZoom={true} 
-            target={[0, -0.15, 0]}
+            target={[0, 1.5, 0]}
             enablePan={false} 
             minPolarAngle={Math.PI / 2.2} 
             maxPolarAngle={Math.PI / 1.8}
