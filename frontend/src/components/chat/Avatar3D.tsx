@@ -66,25 +66,21 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
     });
   });
 
-  return (
-    <Center>
-      <primitive object={scene} />
-    </Center>
-  );
+  return <primitive object={scene} />;
 }
 
 export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
   return (
     <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
-        <Canvas camera={{ position: [0, -0.2, 1.5], fov: 45 }}>
+        <Canvas camera={{ position: [0, -0.15, 0.8], fov: 45 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
           <React.Suspense fallback={<Html center><div style={{ color: '#4b5563', fontWeight: 'bold', textAlign: 'center', width: '200px' }}>Cargando modelo 3D...<br/><small>(Puede tardar un poco si es pesado)</small></div></Html>}>
-            <Bounds fit clip observe margin={1.2}>
+            <Center top>
               <Model isSpeaking={isSpeaking} />
-            </Bounds>
+            </Center>
           </React.Suspense>
           <OrbitControls 
             makeDefault
