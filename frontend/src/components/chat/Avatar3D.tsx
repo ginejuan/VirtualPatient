@@ -1,4 +1,5 @@
-import React, { Component, ErrorInfo } from 'react';
+import React, { Component } from 'react';
+import type { ErrorInfo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
