@@ -26,6 +26,28 @@ try:
 except Exception:
     pass
 
+# Auto-migration for cases table (added fields)
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE cases ADD COLUMN age INTEGER"))
+        conn.commit()
+except Exception:
+    pass
+
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE cases ADD COLUMN gestational_weeks INTEGER"))
+        conn.commit()
+except Exception:
+    pass
+
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE cases ADD COLUMN reason VARCHAR"))
+        conn.commit()
+except Exception:
+    pass
+
 
 load_dotenv()
 
