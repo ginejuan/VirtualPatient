@@ -31,7 +31,7 @@ class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { has
 }
 
 // URL to a generic female Ready Player Me model (can be changed later)
-const MODEL_URL = 'https://models.readyplayer.me/64b5585b7e2e83162b7ebbb1.glb';
+const MODEL_URL = '/avatar.glb';
 
 function Model({ isSpeaking }: { isSpeaking: boolean }) {
   const { scene } = useGLTF(MODEL_URL);
