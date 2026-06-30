@@ -547,37 +547,76 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   /* Layout general */
   .simulation-page {
-    padding: var(--spacing-sm);
-    height: auto;
-    min-height: 100vh;
+    padding: var(--spacing-xs);
+    height: 100dvh; /* Dynamic viewport height para móviles */
+    min-height: 100dvh;
+    overflow: hidden;
   }
   
   .simulation-header {
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--spacing-sm);
-    text-align: center;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
+  }
+
+  .simulation-header h2 {
+    font-size: 1.1rem;
   }
 
   .simulation-content {
     flex-direction: column;
-    height: auto;
+    height: 100%;
+    flex: 1;
+    min-height: 0;
+    gap: var(--spacing-xs);
   }
 
-  /* Sidebar pasa a ser horizontal o apilada arriba */
+  /* Sidebar apilada arriba */
   .patient-sidebar {
     width: 100%;
-    padding: var(--spacing-md);
+    padding: var(--spacing-xs);
+    flex-direction: row; /* Avatar y datos uno al lado del otro */
+    align-items: center;
+    gap: var(--spacing-sm);
   }
 
-  /* El avatar es demasiado grande en móvil, reducimos altura */
+  /* El avatar es demasiado grande en móvil, lo hacemos cuadradito */
   .patient-sidebar > div:first-child {
-    height: 250px !important;
+    height: 120px !important;
+    width: 120px !important;
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
   }
 
-  /* Chat area */
+  /* Los datos clínicos a la derecha del avatar */
+  .patient-sidebar > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+  }
+  
+  .patient-sidebar h3, .info-alert {
+    display: none; /* Ocultamos el título y la alerta para ahorrar espacio en móvil */
+  }
+
+  .clinical-data-list {
+    font-size: 0.8rem;
+  }
+
+  /* Chat area ocupa el resto */
   .chat-area {
-    height: 60vh; /* Para que ocupe parte de la pantalla, pero deje hacer scroll si es necesario */
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+
+  .chat-header {
+    padding: var(--spacing-xs);
+  }
+
+  .chat-messages {
+    padding: var(--spacing-sm);
   }
 
   /* Formularios en dashboards */
@@ -591,6 +630,6 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Botones e inputs */
   .chat-input-wrapper {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
   }
 }
