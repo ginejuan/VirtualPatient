@@ -216,6 +216,9 @@ export const ProfessorDashboard: React.FC = () => {
   const [editingCase, setEditingCase] = useState<any>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editAge, setEditAge] = useState('');
+  const [editGestationalWeeks, setEditGestationalWeeks] = useState('');
+  const [editReason, setEditReason] = useState('');
 
   const handleEditCase = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,7 +230,13 @@ export const ProfessorDashboard: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify({ title: editTitle, description: editDescription })
+        body: JSON.stringify({ 
+          title: editTitle, 
+          description: editDescription,
+          age: editAge ? parseInt(editAge) : null,
+          gestational_weeks: editGestationalWeeks ? parseInt(editGestationalWeeks) : null,
+          reason: editReason
+        })
       });
       if (res.ok) {
         setEditingCase(null);
@@ -449,6 +458,9 @@ export const ProfessorDashboard: React.FC = () => {
                               setEditingCase(c);
                               setEditTitle(c.title);
                               setEditDescription(c.description || '');
+                              setEditAge(c.age || '');
+                              setEditGestationalWeeks(c.gestational_weeks || '');
+                              setEditReason(c.reason || '');
                             }}
                           >
                             Editar
@@ -622,6 +634,20 @@ export const ProfessorDashboard: React.FC = () => {
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Título del Caso</label>
                 <input required className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editTitle} onChange={e => setEditTitle(e.target.value)} />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Edad de la Paciente</label>
+                  <input type="number" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editAge} onChange={e => setEditAge(e.target.value)} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Semanas de Gestación</label>
+                  <input type="number" className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editGestationalWeeks} onChange={e => setEditGestationalWeeks(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Motivo de Consulta</label>
+                <input className="chat-input" style={{ width: '100%', borderRadius: '8px' }} value={editReason} onChange={e => setEditReason(e.target.value)} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Descripción</label>
