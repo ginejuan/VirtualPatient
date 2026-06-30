@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import type { ErrorInfo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment, Html, Center } from '@react-three/drei';
+import { useGLTF, OrbitControls, Environment, Html, Center, Bounds } from '@react-three/drei';
 import * as THREE from 'three';
 
 class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -75,10 +75,13 @@ export const Avatar3D = ({ isSpeaking }: { isSpeaking: boolean }) => {
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
           <React.Suspense fallback={<Html center><div style={{ color: '#4b5563', fontWeight: 'bold', textAlign: 'center', width: '200px' }}>Cargando modelo 3D...<br/><small>(Puede tardar un poco si es pesado)</small></div></Html>}>
-            <Model isSpeaking={isSpeaking} />
+            <Bounds fit clip observe margin={1.2}>
+              <Model isSpeaking={isSpeaking} />
+            </Bounds>
           </React.Suspense>
           <OrbitControls 
-            enableZoom={false} 
+            makeDefault
+            enableZoom={true} 
             enablePan={false} 
             minPolarAngle={Math.PI / 2.2} 
             maxPolarAngle={Math.PI / 1.8}
