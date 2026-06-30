@@ -52,11 +52,11 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
         const jawOpenIdx = targetKey ? dict[targetKey] : undefined;
         
         if (jawOpenIdx !== undefined) {
-           // If speaking, oscillate the jaw based on time to simulate speaking
+           // If speaking, generate pseudo-random syllables
            if (isSpeaking) {
-             const targetVal = (Math.sin(state.clock.elapsedTime * 15) + 1) / 2 * 0.4; // oscillate between 0 and 0.4
-             // smooth transition
-             child.morphTargetInfluences[jawOpenIdx] = THREE.MathUtils.lerp(child.morphTargetInfluences[jawOpenIdx], targetVal, 0.3);
+             const currentFrame = Math.floor(state.clock.elapsedTime * 8); // Change shape 8 times per second
+             const pseudoRandom = Math.abs(Math.sin(currentFrame * 435.23)) * 0.7; // Random width 0 to 0.7
+             child.morphTargetInfluences[jawOpenIdx] = THREE.MathUtils.lerp(child.morphTargetInfluences[jawOpenIdx], pseudoRandom, 0.4);
            } else {
              // close mouth
              child.morphTargetInfluences[jawOpenIdx] = THREE.MathUtils.lerp(child.morphTargetInfluences[jawOpenIdx], 0, 0.2);
