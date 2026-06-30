@@ -41,8 +41,15 @@ function Model({ isSpeaking }: { isSpeaking: boolean }) {
     // Traverse the scene to find the head mesh and its morph targets
     scene.traverse((child: any) => {
       if (child.isMesh && child.morphTargetDictionary && child.morphTargetInfluences) {
-        // Find the index for jawOpen or mouthOpen
-        const jawOpenIdx = child.morphTargetDictionary['mouthOpen'] ?? child.morphTargetDictionary['jawOpen'];
+        // Find the index for any mouth/jaw open blendshape
+        const dict = child.morphTargetDictionary;
+        const keys = Object.keys(dict);
+        const targetKey = keys.find(k => {
+          const l = k.toLowerCase();
+          return l.includes('jawopen') || l.includes('mouthopen') || l.includes('viseme_aa') || l.includes('v_aa') || l === 'a';
+        });
+
+        const jawOpenIdx = targetKey ? dict[targetKey] : undefined;
         
         if (jawOpenIdx !== undefined) {
            // If speaking, oscillate the jaw based on time to simulate speaking
