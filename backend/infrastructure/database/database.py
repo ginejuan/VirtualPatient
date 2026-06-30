@@ -2,9 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
+os.makedirs("data", exist_ok=True)
+
 # Usaremos SQLite para el desarrollo local. 
-# En Dokploy solo habrá que cambiar esta URL por la de PostgreSQL.
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./virtualpatient_v4.db")
+# En Dokploy solo habrá que cambiar esta URL por la de PostgreSQL si lo deseas.
+# Por defecto se guarda en la carpeta data/ para facilitar la persistencia con Volúmenes de Docker.
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/virtualpatient_v4.db")
 
 engine = create_engine(
     DATABASE_URL, 

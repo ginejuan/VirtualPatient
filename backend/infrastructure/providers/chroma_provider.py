@@ -2,8 +2,12 @@ import chromadb
 from chromadb.config import Settings
 import uuid
 
-# Initialize ChromaDB in a local directory
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+import os
+
+os.makedirs("data", exist_ok=True)
+
+# Initialize ChromaDB in a local directory (inside data/ for persistence)
+chroma_client = chromadb.PersistentClient(path="./data/chroma_db")
 collection = chroma_client.get_or_create_collection(name="clinical_cases")
 
 class ChromaProvider:
