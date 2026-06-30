@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
 // URL to a generic female Ready Player Me model (can be changed later)
