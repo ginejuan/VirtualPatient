@@ -4,14 +4,14 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
+class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean, errorMsg: string }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMsg: '' };
   }
 
-  static getDerivedStateFromError(_: Error) {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMsg: error.message };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -21,8 +21,9 @@ class AvatarErrorBoundary extends Component<{ children: React.ReactNode }, { has
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fee2e2', color: '#ef4444', padding: '1rem', textAlign: 'center' }}>
-          <span>No se pudo cargar el Avatar 3D.</span>
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#ef4444', background: '#fca5a5', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <strong>No se pudo cargar el Avatar 3D.</strong>
+          <small style={{ marginTop: '1rem', color: '#7f1d1d' }}>{this.state.errorMsg}</small>
         </div>
       );
     }
