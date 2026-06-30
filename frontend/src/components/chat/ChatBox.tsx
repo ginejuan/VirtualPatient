@@ -63,9 +63,18 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ messages, isTyping, onSendMess
       const audio = new Audio(url);
       audioRef.current = audio;
       
-      audio.onplaying = () => onSpeakStart?.();
-      audio.onended = () => onSpeakEnd?.();
-      audio.onpause = () => onSpeakEnd?.();
+      // Check if it's the clinical system narrator speaking
+      const isSystemNarrator = text.toUpperCase().startsWith('[SISTEMA CLÍNICO]') || text.toUpperCase().startsWith('SISTEMA CLÍNICO:');
+      
+      audio.onplaying = () => {
+        if (!isSystemNarrator) onSpeakStart?.();
+      };
+      audio.onended = () => {
+        if (!isSystemNarrator) onSpeakEnd?.();
+      };
+      audio.onpause = () => {
+        if (!isSystemNarrator) onSpeakEnd?.();
+      };
       
       audio.play().catch(e => {
         console.error('Audio play error:', e);
