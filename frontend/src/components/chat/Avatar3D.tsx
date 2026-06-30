@@ -40,6 +40,22 @@ const AvatarModel = ({ isSpeaking, patientAge }: Avatar3DProps) => {
   const modelPath = patientAge && patientAge > 50 ? '/avatar_mayor.glb' : '/avatar.glb';
   const { scene } = useGLTF(modelPath);
   
+  // Bajar los brazos de la Pose en T a una posición de descanso
+  React.useEffect(() => {
+    if (!scene) return;
+    scene.traverse((child: any) => {
+      if (child.isBone) {
+        const name = child.name.toLowerCase();
+        // Rigs de MetaPerson / ReadyPlayerMe usan LeftArm y RightArm
+        if (name === 'leftarm' || name.includes('left_arm')) {
+          child.rotation.z = 1.2; // Bajar brazo izquierdo
+        } else if (name === 'rightarm' || name.includes('right_arm')) {
+          child.rotation.z = -1.2; // Bajar brazo derecho
+        }
+      }
+    });
+  }, [scene]);
+
   // A simple animation loop to move the jaw if isSpeaking is true
   useFrame((state) => {
     // Traverse the scene to find the head mesh and its morph targets
@@ -74,10 +90,14 @@ const AvatarModel = ({ isSpeaking, patientAge }: Avatar3DProps) => {
 }
 
 export const Avatar3D = ({ isSpeaking, patientAge }: Avatar3DProps) => {
+  // En móviles acercamos más la cámara a la cara
+  const isMobile = window.innerWidth <= 768;
+  const cameraPos: [number, number, number] = isMobile ? [-0.05, 1.55, 0.40] : [-0.2, 1.55, 0.55];
+
   return (
-    <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: '120px', borderRadius: '12px', overflow: 'hidden', background: '#e5e7eb', marginBottom: '1rem', position: 'relative' }}>
       <AvatarErrorBoundary>
-        <Canvas camera={{ position: [-0.2, 1.55, 0.55], fov: 45 }}>
+        <Canvas camera={{ position: cameraPos, fov: 45 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 2, 2]} intensity={1.5} />
           <Environment preset="city" />
