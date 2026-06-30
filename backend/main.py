@@ -48,6 +48,13 @@ try:
 except Exception:
     pass
 
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE cases ADD COLUMN rubric TEXT"))
+        conn.commit()
+except Exception:
+    pass
+
 
 load_dotenv()
 
@@ -297,19 +304,19 @@ async def evaluar_consulta(request: EvaluarRequest, db: Session = Depends(get_db
         formatted_history = "\n".join([f"{role_map.get(msg.role, msg.role.upper())}: {msg.content}" for msg in request.history])
         
         context = MOCK_CASE_CONTEXT
+        rubric_to_use = MOCK_RUBRIC
         if request.caso_id and request.caso_id != "demo":
             case_record = db.query(ClinicalCase).filter(ClinicalCase.id == request.caso_id).first()
             if case_record:
+                if case_record.rubric and case_record.rubric.strip():
+                    rubric_to_use = case_record.rubric
                 chroma_text = ChromaProvider.get_case(case_record.chroma_id)
                 if chroma_text:
                     context = chroma_text
                     
-        # Para la rúbrica, idealmente se extraería del mismo documento o de la BBDD
-        # Por ahora enviamos el texto entero como contexto y que la IA extraiga la rúbrica si está ahí.
-        
         evaluation_result = llm_provider.evaluate_consultation(
             case_context=context,
-            rubric=MOCK_RUBRIC,
+            rubric=rubric_to_use,
             history=formatted_history,
             student_judgment=request.juicio_clinico
         )
@@ -393,6 +400,7 @@ async def upload_clinical_case(
     age: int = Form(None),
     gestational_weeks: int = Form(None),
     reason: str = Form(None),
+    rubric: str = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_professor)
@@ -424,6 +432,7 @@ async def upload_clinical_case(
             age=age,
             gestational_weeks=gestational_weeks,
             reason=reason,
+            rubric=rubric,
             chroma_id=chroma_id,
             created_by_id=current_user.id
         )
@@ -444,7 +453,8 @@ async def get_clinical_cases(db: Session = Depends(get_db), current_user: User =
         "description": c.description,
         "age": c.age,
         "gestational_weeks": c.gestational_weeks,
-        "reason": c.reason
+        "reason": c.reason,
+        "rubric": c.rubric
     } for c in cases]
 
 class CaseEditRequest(BaseModel):
@@ -453,6 +463,7 @@ class CaseEditRequest(BaseModel):
     age: Optional[int] = None
     gestational_weeks: Optional[int] = None
     reason: Optional[str] = None
+    rubric: Optional[str] = None
 
 @app.put("/cases/{case_id}")
 async def edit_case(case_id: int, request: CaseEditRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_professor)):
@@ -467,6 +478,7 @@ async def edit_case(case_id: int, request: CaseEditRequest, db: Session = Depend
     case_record.age = request.age
     case_record.gestational_weeks = request.gestational_weeks
     case_record.reason = request.reason
+    case_record.rubric = request.rubric
     db.commit()
     return {"message": "Caso actualizado"}
 

@@ -175,6 +175,7 @@ export const ProfessorDashboard: React.FC = () => {
   const [caseAge, setCaseAge] = useState('');
   const [caseGestationalWeeks, setCaseGestationalWeeks] = useState('');
   const [caseReason, setCaseReason] = useState('');
+  const [caseRubric, setCaseRubric] = useState('');
   const [caseFile, setCaseFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -189,6 +190,7 @@ export const ProfessorDashboard: React.FC = () => {
     if (caseAge) formData.append('age', caseAge);
     if (caseGestationalWeeks) formData.append('gestational_weeks', caseGestationalWeeks);
     if (caseReason) formData.append('reason', caseReason);
+    if (caseRubric) formData.append('rubric', caseRubric);
     formData.append('file', caseFile);
 
     try {
@@ -198,7 +200,11 @@ export const ProfessorDashboard: React.FC = () => {
         body: formData
       });
       if (res.ok) {
-        setCaseTitle(''); setCaseDescription(''); setCaseAge(''); setCaseGestationalWeeks(''); setCaseReason(''); setCaseFile(null);
+        setCaseTitle(''); setCaseDescription(''); setCaseAge('');
+        setCaseGestationalWeeks('');
+        setCaseReason('');
+        setCaseRubric('');
+        setCaseFile(null);
         fetchCases();
         alert("Caso subido con éxito a ChromaDB");
       } else {
@@ -507,6 +513,10 @@ export const ProfessorDashboard: React.FC = () => {
                 <div>
                   <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Descripción (Opcional)</label>
                   <textarea className="chat-input" style={{ width: '100%', borderRadius: '8px', minHeight: '80px', resize: 'vertical' }} value={caseDescription} onChange={e => setCaseDescription(e.target.value)} placeholder="Breve resumen del caso y objetivos docentes..." />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Rúbrica de Evaluación Estricta (Opcional)</label>
+                  <textarea className="chat-input" style={{ width: '100%', borderRadius: '8px', minHeight: '120px', resize: 'vertical' }} value={caseRubric} onChange={e => setCaseRubric(e.target.value)} placeholder="1. Pregunta alergias (20 pts)&#10;2. Pregunta antecedentes familiares (30 pts)...&#10;Si se deja en blanco, se usará una rúbrica genérica médica." />
                 </div>
                 <div style={{ border: '2px dashed var(--color-border)', padding: '2rem', borderRadius: '12px', textAlign: 'center', background: 'rgba(0,0,0,0.01)' }}>
                   <input 

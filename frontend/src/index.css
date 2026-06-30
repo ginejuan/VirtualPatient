@@ -543,3 +543,54 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   color: inherit;
 }
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  /* Layout general */
+  .simulation-page {
+    padding: var(--spacing-sm);
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .simulation-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
+    padding: var(--spacing-sm);
+  }
+
+  .simulation-content {
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* Sidebar pasa a ser horizontal o apilada arriba */
+  .patient-sidebar {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  /* El avatar es demasiado grande en móvil, reducimos altura */
+  .patient-sidebar > div:first-child {
+    height: 250px !important;
+  }
+
+  /* Chat area */
+  .chat-area {
+    height: 60vh; /* Para que ocupe parte de la pantalla, pero deje hacer scroll si es necesario */
+  }
+
+  /* Formularios en dashboards */
+  form {
+    flex-direction: column;
+  }
+  
+  form > div {
+    flex-direction: column;
+  }
+
+  /* Botones e inputs */
+  .chat-input-wrapper {
+    padding: var(--spacing-sm);
+  }
+}

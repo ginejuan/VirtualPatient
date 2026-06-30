@@ -53,6 +53,7 @@ class ClinicalCase(Base):
     age = Column(Integer, nullable=True)
     gestational_weeks = Column(Integer, nullable=True)
     reason = Column(String, nullable=True)
+    rubric = Column(Text, nullable=True)
     chroma_id = Column(String, nullable=False, unique=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
